@@ -2,13 +2,14 @@ package com.rnd.exceptionhandler.service;
 
 import com.rnd.exceptionhandler.dto.UserRequest;
 import com.rnd.exceptionhandler.entity.User;
+import com.rnd.exceptionhandler.exception.NotFoundException;
 import com.rnd.exceptionhandler.exception.UserException;
 import com.rnd.exceptionhandler.repository.UserRepository;
+import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class UserService {
@@ -32,13 +33,22 @@ public class UserService {
         return userRepository.findAll();
     }
 
-    public Optional<User> getUserById(String id) throws UserException {
-        Optional<User> user = userRepository.findById(id);
-        if(!user.isEmpty()) {
-            return user;
+    @SneakyThrows
+    public User getUserByName(String name) {
+        User user = userRepository.getUserByName(name);
+        if(user != null) {
+            return userRepository.getUserByName(name);
         } else {
-            throw new UserException("User with id " + id + " not found!");
+            throw errorMapping();
         }
 
     }
+
+    private NotFoundException errorMapping() {
+        NotFoundException exception = new NotFoundException();
+        exception.setResponseCode("404600");
+        exception.setResponseMessage("User not found");
+        return exception;
+    }
+
 }

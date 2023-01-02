@@ -1,5 +1,6 @@
 package com.rnd.exceptionhandler.dto;
 
+import com.rnd.exceptionhandler.annotation.userRequest.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -13,18 +14,16 @@ import javax.validation.constraints.*;
 @Builder
 public class UserRequest {
 
-    @NotNull(message = "name shouldn't be null")
+    @NameValidation
     private String name;
-    @Email(message = "Invalid email address")
+    @EmailValidation
     private String email;
-    @Pattern(regexp = "^\\d{10}$", message = "Invalid phone number")
+    @PhoneNumberValidation
     private String phoneNumber;
-
+    @GenderValidation
     private String gender;
-    @Min(10)
-    @Max(60)
+    @AgeValidation
     private Integer age;
-    @NotBlank
     private String address;
 
 }
