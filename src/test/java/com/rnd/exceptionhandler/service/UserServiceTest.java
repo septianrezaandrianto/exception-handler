@@ -3,23 +3,26 @@ package com.rnd.exceptionhandler.service;
 import com.rnd.exceptionhandler.dto.UserRequest;
 import com.rnd.exceptionhandler.entity.User;
 import com.rnd.exceptionhandler.exception.NotFoundException;
+import com.rnd.exceptionhandler.generator.NameGenerator;
 import com.rnd.exceptionhandler.repository.UserRepository;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.DisplayName;
+import org.junit.jupiter.api.DisplayNameGeneration;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
-import org.springframework.beans.factory.annotation.Autowired;
+import org.mockito.junit.jupiter.MockitoSettings;
+import org.mockito.quality.Strictness;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
 import static org.mockito.Mockito.*;
 import static org.junit.jupiter.api.Assertions.*;
 @ExtendWith(MockitoExtension.class)
+@MockitoSettings(strictness = Strictness.LENIENT)
+@DisplayNameGeneration(NameGenerator.class)
 public class UserServiceTest {
 
     @InjectMocks
@@ -27,31 +30,26 @@ public class UserServiceTest {
     @Mock
     private UserRepository userRepository;
     @Test
-    @DisplayName("should return success getUserList")
     public void getUserList() {
         List<User> userList = userList();
         when(userRepository.findAll()).thenReturn(userList);
 
-//      Test
         List<User> service = userService.getUserList();
         assertEquals(2, service.size());
         verify(userRepository, times(1)).findAll();
     }
 
     @Test
-    @DisplayName("should return success getUserList empty")
     public void getUserList_empty() {
         List<User> userList = new ArrayList<>();
         when(userRepository.findAll()).thenReturn(userList);
 
-//      Test
         List<User> service = userService.getUserList();
         assertEquals(0, service.size());
         verify(userRepository, times(1)).findAll();
     }
 
     @Test
-    @DisplayName("should return success getUserByName")
     public void getUserByName() {
         when(userRepository.getUserByName("Reza")).thenReturn(getUser("Reza",
                 "reza@gmail.com", "M", "123456789098",
@@ -62,9 +60,19 @@ public class UserServiceTest {
         verify(userRepository, times(2)).getUserByName("Reza");
     }
 
-
     @Test
-    @DisplayName("should return success createUser")
+    public void getUserByName_failed() {
+        when(userRepository.getUserByName("Reza")).thenReturn(getUser("Reza",
+                "reza@gmail.com", "M", "123456789098",
+                "Bekasi", 25));
+
+        assertThrows(NotFoundException.class, ()-> {
+            userService.getUserByName("Rahmat");
+        });
+
+
+    }
+    @Test
     public void createUser() {
         UserRequest userReq = getUserRequest("Reza",
                 "reza@gmail.com", "M", "123456789098",
@@ -73,9 +81,7 @@ public class UserServiceTest {
                 userReq.getAddress(), userReq.getAge());
         userService.createUser(userReq);
         verify(userRepository, times(1)).save(user);
-
     }
-
 
     private List<User> userList() {
         List<User> dataList = new ArrayList<>();

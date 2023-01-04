@@ -3,7 +3,6 @@ package com.rnd.exceptionhandler.service;
 import com.rnd.exceptionhandler.dto.UserRequest;
 import com.rnd.exceptionhandler.entity.User;
 import com.rnd.exceptionhandler.exception.NotFoundException;
-import com.rnd.exceptionhandler.exception.UserException;
 import com.rnd.exceptionhandler.repository.UserRepository;
 import lombok.SneakyThrows;
 import org.springframework.beans.factory.annotation.Autowired;
